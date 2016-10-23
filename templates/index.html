@@ -1,0 +1,44 @@
+<html>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        socket.on('connect', function() {
+            socket.emit('my event', {data: 'I\'m connected!'});
+        });
+
+        // get registration event from server
+        socket.on('registration', function(data) {
+            data = data;
+            console.log("Got id:" + data['node_id']);
+            this.node_id = data.node_id;
+            socket.emit('registration_complete',  {'node_id' : this.node_id});
+        });
+
+        // get job
+        socket.on('job_request', function(data){
+            // got a job request from the server
+            var payload_operation = data.payload_operation;
+
+            try {
+                var results = executePayload(payload_operation);
+            } catch(err) {
+                socket.emit('job_results', {
+                    'code' : 1
+                })
+            }
+
+            // return the calculated results
+            socket.emit('job_results', {
+                'code': 0,
+                'node_id' : this.node_id,
+                'results' : this.results
+            });
+        });
+
+        // exectute payload and return result
+        function executePayload(payload_operation, payload_data) {
+            var results = new Function(payload_operation)();
+            return results;
+        }
+    </script>
+</html>
