@@ -14,7 +14,11 @@ manager = DispatchManager()
 def index():
     """
     The homepage.
-    clients can go here to register as a consumer of jobs.
+
+    Clients can go here to register as a consumer of jobs.
+
+    When transitioned into a library ideally we would just have a script tag.
+
     """
     return render_template('index.html')
 
@@ -26,6 +30,10 @@ console.log('ola');
 
 @socketio.on('connect')
 def connect():
+    """
+    Handle a client initially connecting.
+    Generate a temporary node with node id and give it to the client to confirm.
+    """
     print ("Received new client connection")
 
     node = Node()
@@ -36,11 +44,11 @@ def connect():
 
 @socketio.on('registration_complete')
 def registration_complete(data):
+    """
+    A client calls this to confirm registration handshake.
+    """
     node_id = data.get('node_id')
-
-    node = Node(node_id)
-
-    manager.add_new_node(node)
+    manager.add_new_node(Node(node_id))
 
     print 'Registered node with id %s' % node.id
 
@@ -48,13 +56,20 @@ def registration_complete(data):
 
 @socketio.on('job_results')
 def get_results(result_data):
+    """
+    Client calls this after processing data.
+
+    result_data will have a codes for the following states:
+        0 : SUCCESS
+        1 : FAILURE
+    """
     # possible error code
     code = result_data.get('code');
-    if not code == 0:
-        print 'ERROR'
-        return
+    if code == 0:
+        print 'SUCCESS'
+    elif code == 1:
+        print 'FAILURE'
 
-    print code
 
 # code to start server
 if __name__ == '__main__':

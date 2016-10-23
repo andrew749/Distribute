@@ -68,7 +68,13 @@ class Payload:
         }
 
 class NodePool:
+    """
+    A pool manager for nodes to distribute available resources.
+    """
+    # mapping id to nodes which are free for processing
     free_nodes = {}
+
+    # mapping id to nodes which are currently being used
     occupied_nodes = {}
 
     def __init__(self):
@@ -86,13 +92,30 @@ class NodePool:
         self.occupied_nodes.append(node)
         return node
 
-    def get_free_nodes(self, number_of_nodes):
+    def free_node(self, node_id):
+        """
+        Free a currently occupied node.
+        """
+        node = self.occupied_nodes.pop(node_id)
+        self.free_nodes[node.id] = node
+        return node
+
+    def consume_free_nodes(self, number_of_nodes):
+        """
+        Args:
+            number_of_nodes: number of nodes that a client requests to process the request.
+        """
         nodes = []
         for x in xrange(number_of_nodes):
             nodes.append(self.consume_free_node())
         return nodes
 
 class Node:
+    """
+    Properties:
+        current_job_id: the id that this node is currently associated with
+        id: the primary key id of this node
+    """
     current_job_id = None
 
     def __init__(self, id = None):

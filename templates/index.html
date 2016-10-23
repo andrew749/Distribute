@@ -24,7 +24,7 @@
             } catch(err) {
                 socket.emit('job_results', {
                     'code' : 1
-                })
+                });
             }
 
             // return the calculated results
@@ -34,6 +34,10 @@
                 'results' : this.results
             });
         });
+
+        socket.on('kill_job', function(data) {
+            // need to refactor to allow.
+        })
 
         // exectute payload and return result
         function executePayload(payload_operation, payload_data) {
