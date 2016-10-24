@@ -39,7 +39,6 @@ def connect():
     NodePool.get_pool().add_new_node(node)
 
     node.emit('registration', node.to_dict())
-    DispatchManager.get_manager().dispatch_job(job)
 
 @socketio.on('job_results')
 def get_results(result_data):
@@ -70,23 +69,29 @@ def get_results(result_data):
     #get the job and push the data to it
     DispatchManager.get_manager().get_job(job_id).append_result(result)
 
-# our test data
-payload = Payload(
-    operation = \
+@app.route('/test')
+def test():
     """
-    var a = [];
-    for (var x = 0; x < 10; x++) {
-        a.push(x);
-    }
-    return a;
-    """,
-    data=[1]
-)
+    Simple test method used for debugging currently to mock the full flow.
+    """
+    # our test data
+    payload = Payload(
+        operation = \
+        """
+        var a = [];
+        for (var x = 0; x < 10; x++) {
+            a.push(x);
+        }
+        return a;
+        """,
+        data=[1]
+    )
 
-job = Job(
-    payload = payload,
-    required_number_of_nodes = 1
-)
+    job = Job(
+        payload = payload,
+        required_number_of_nodes = 1
+    )
+    DispatchManager.get_manager().dispatch_job(job)
 
 # code to start server
 if __name__ == '__main__':
