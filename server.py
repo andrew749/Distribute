@@ -64,7 +64,6 @@ def get_results(result_data):
     job_id = result_data.get('job_id')
     node_id = result_data.get('node_id')
     result = result_data.get('results')
-
     # free up resources
     NodePool.get_pool().free_node(node_id)
 
@@ -75,7 +74,11 @@ def get_results(result_data):
 payload = Payload(
     operation = \
     """
-    console.log('ola');
+    var a = [];
+    for (var x = 0; x < 10; x++) {
+        a.push(x);
+    }
+    return a;
     """,
     data=[1]
 )
@@ -84,7 +87,6 @@ job = Job(
     payload = payload,
     required_number_of_nodes = 1
 )
-
 
 # code to start server
 if __name__ == '__main__':
