@@ -93,16 +93,17 @@ def test():
         """
         var a = [];
         for (var x in payload_data) {
-            a.push(Math.pow(parseInt(x), 2));
+            a.push(Math.pow(parseInt(payload_data[x]), 10));
         }
         return a;
         """,
-        data=range(100)
+        data=range(1000)
     )
 
     job = Job(
         payload = payload,
-        required_number_of_nodes = 2
+        # use all aailable cluster nodes
+        required_number_of_nodes = len(NodePool.get_pool().free_nodes)
     )
     DispatchManager.get_manager().dispatch_job(job, namespace = '/')
     return 'OK'
