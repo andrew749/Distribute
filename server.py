@@ -93,11 +93,11 @@ def test():
         """
         var a = [];
         for (var x in payload_data) {
-            a.push(Math.pow(parseInt(payload_data[x]), 10));
+            a.push(parseInt(payload_data[x]));
         }
         return a;
         """,
-        data=range(1000)
+        data=range(1000000)
     )
 
     job = Job(
