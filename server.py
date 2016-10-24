@@ -93,7 +93,6 @@ def test():
         """
         var a = [];
         for (var x in payload_data) {
-            console.log(x);
             a.push(Math.pow(parseInt(x), 2));
         }
         return a;
