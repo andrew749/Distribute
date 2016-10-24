@@ -20,14 +20,19 @@ class NodePool:
         return cls._pool
 
     def add_new_node(self, node):
+        print 'Adding Node %s to pool' % node.id
         self.free_nodes[str(node.id)] = node
 
     def remove_node(self, node_id):
         """
         Remove a node from the pool since it can no longer be used.
         """
-        self.free_nodes.pop(node_id)
-        self.occupied_nodes.pop(node_id)
+        print "Removing node %s from pool" % node_id
+
+        node = self.free_nodes.pop(node_id) or self.occupied_nodes.pop(node_id)
+
+        if node:
+            node.finish()
 
     def free_node(self, node_id):
         """
@@ -36,6 +41,7 @@ class NodePool:
         if node_id not in self.occupied_nodes:
             return None
 
+        print 'Freeing node %s' % node_id
         node = self.occupied_nodes.pop(node_id)
         if node:
             self.free_nodes.update({str(node.id):node})
@@ -51,6 +57,9 @@ class NodePool:
             node: the node that can be used for processing
         """
         node = self.free_nodes.popitem()
+
+        print 'Consuming node %s' % node.id
+
         self.occupied_nodes.update({str(node[0]): node[1]})
         return node[1]
 

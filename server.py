@@ -47,6 +47,11 @@ def connect():
     })
     node.emit('registration', node.to_dict())
 
+@socketio.on('unregister')
+def unregister(data):
+    print 'Got unregister command'
+    NodePool.get_pool().remove_node(data.get('node_id'))
+
 class StatusCodes:
     SUCCESS = 0
     FAILURE = 1

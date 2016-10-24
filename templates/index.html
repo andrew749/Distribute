@@ -54,6 +54,9 @@
                     return results;
                 }
             });
+            window.onbeforeunload = function() {
+                socket.emit('unregister', {'node_id': context.node_id});
+            }
         </script>
     </body>
 </html>
