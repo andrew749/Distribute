@@ -87,25 +87,19 @@ def test():
     """
     Simple test method used for debugging currently to mock the full flow.
     """
-    # our test data
-    payload = Payload(
-        operation = \
-        """
-        var a = [];
-        for (var x in payload_data) {
-            a.push(parseInt(payload_data[x]));
-        }
-        return a;
-        """,
-        data=range(1000000)
-    )
+    with open('test_operation.js') as f:
+        # our test data
+        payload = Payload(
+            operation = f.read(),
+            data=range(1000000)
+        )
 
-    job = Job(
-        payload = payload,
-        # use all aailable cluster nodes
-        required_number_of_nodes = len(NodePool.get_pool().free_nodes)
-    )
-    DispatchManager.get_manager().dispatch_job(job, namespace = '/')
+        job = Job(
+            payload = payload,
+            # use all aailable cluster nodes
+            required_number_of_nodes = len(NodePool.get_pool().free_nodes)
+        )
+        DispatchManager.get_manager().dispatch_job(job, namespace = '/')
     return 'OK'
 
 # code to start server
