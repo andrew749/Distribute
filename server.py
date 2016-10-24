@@ -92,12 +92,13 @@ def test():
         operation = \
         """
         var a = [];
-        for (var x = 0; x < 100; x++) {
-            a.push(x);
+        for (var x in payload_data) {
+            console.log(x);
+            a.push(Math.pow(parseInt(x), 2));
         }
         return a;
         """,
-        data=[1]
+        data=range(100)
     )
 
     job = Job(
