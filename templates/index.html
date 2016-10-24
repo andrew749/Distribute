@@ -2,47 +2,53 @@
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
         var socket = io.connect('http://' + document.domain + ':' + location.port);
-        socket.on('connect', function() {
-            socket.emit('my event', {data: 'I\'m connected!'});
+var context = this;
+socket.on('connect', function(socket) {
+    console.log("connected");
+
+});
+// get registration event from server
+socket.on('registration', function(data) {
+    data = data;
+    console.log("Got id:" + data['node_id']);
+    context.node_id = data.node_id;
+});
+
+// get job
+socket.on('job_request', function(data){
+    // got a job request from the server
+    var payload_operation = data.payload_operation;
+    var job_id = data.job_id;
+    console.log("Got job with id " + job_id);
+
+    var results;
+    try {
+        var results = executePayload(payload_operation);
+    } catch(err) {
+        socket.emit("job_results", {
+            code : 1,
+            node_id : context.node_id,
+            message: err,
+            job_id: context.job_id
         });
+    }
 
-        // get registration event from server
-        socket.on('registration', function(data) {
-            data = data;
-            console.log("Got id:" + data['node_id']);
-            this.node_id = data.node_id;
-            socket.emit('registration_complete',  {'node_id' : this.node_id});
-        });
+    // return the calculated results
+    socket.emit("job_results", {
+        'code': 0,
+        'node_id' : context.node_id,
+        'results' : results,
+        'job_id': job_id,
+    });
 
-        // get job
-        socket.on('job_request', function(data){
-            // got a job request from the server
-            var payload_operation = data.payload_operation;
 
-            try {
-                var results = executePayload(payload_operation);
-            } catch(err) {
-                socket.emit('job_results', {
-                    'code' : 1
-                });
-            }
+    // execute payload and return result
+    // TODO add a way to check status and close
+    function executePayload(payload_operation, payload_data) {
+        var results = new Function(payload_operation)();
+        return results;
+    }
 
-            // return the calculated results
-            socket.emit('job_results', {
-                'code': 0,
-                'node_id' : this.node_id,
-                'results' : this.results
-            });
-        });
-
-        socket.on('kill_job', function(data) {
-            // need to refactor to allow.
-        })
-
-        // exectute payload and return result
-        function executePayload(payload_operation, payload_data) {
-            var results = new Function(payload_operation)();
-            return results;
-        }
+});
     </script>
 </html>

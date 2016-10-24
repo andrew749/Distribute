@@ -1,14 +1,17 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from flask_socketio import SocketIO, send, emit
-from dispatch_manager import *
 import logging
 from functools import partial
 from uuid import uuid4
 
+from node_pool import NodePool
+from node import Node
+from payload import Payload
+from job import Job
+from dispatch_manager import DispatchManager
+
 app = Flask(__name__)
 socketio = SocketIO(app)
-
-manager = DispatchManager()
 
 @app.route('/')
 def index():
@@ -22,37 +25,21 @@ def index():
     """
     return render_template('index.html')
 
-#sample body for a payload
-javascript_payload = \
-"""
-console.log('ola');
-"""
-
 @socketio.on('connect')
 def connect():
     """
     Handle a client initially connecting.
     Generate a temporary node with node id and give it to the client to confirm.
     """
+
     print ("Received new client connection")
 
-    node = Node()
+    node = Node(socket_id = request.sid)
+    # Create a new node
+    NodePool.get_pool().add_new_node(node)
 
-    print ("Created new temporary Processing node with id %s" % node.id)
-
-    emit('registration', node.to_dict())
-
-@socketio.on('registration_complete')
-def registration_complete(data):
-    """
-    A client calls this to confirm registration handshake.
-    """
-    node_id = data.get('node_id')
-    manager.add_new_node(Node(node_id))
-
-    print 'Registered node with id %s' % node.id
-
-    # At this point the node is in our system and we can dispatch request to it.
+    node.emit('registration', node.to_dict())
+    DispatchManager.get_manager().dispatch_job(job)
 
 @socketio.on('job_results')
 def get_results(result_data):
@@ -63,12 +50,40 @@ def get_results(result_data):
         0 : SUCCESS
         1 : FAILURE
     """
+    print 'GOT RESULT'
     # possible error code
     code = result_data.get('code');
     if code == 0:
         print 'SUCCESS'
     elif code == 1:
+        # Code path where we want to either stop a job or retry the nodes operations
+        # FIXME add retry logic
         print 'FAILURE'
+        return
+
+    job_id = result_data.get('job_id')
+    node_id = result_data.get('node_id')
+    result = result_data.get('results')
+
+    # free up resources
+    NodePool.get_pool().free_node(node_id)
+
+    #get the job and push the data to it
+    DispatchManager.get_manager().get_job(job_id).append_result(result)
+
+# our test data
+payload = Payload(
+    operation = \
+    """
+    console.log('ola');
+    """,
+    data=[1]
+)
+
+job = Job(
+    payload = payload,
+    required_number_of_nodes = 1
+)
 
 
 # code to start server
