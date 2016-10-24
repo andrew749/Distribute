@@ -45,7 +45,7 @@ class Job:
         if self.result == None:
             self.result = []
 
-        self.result.append(result)
+        self.result.extend(result)
 
         self.received_results += 1
 
