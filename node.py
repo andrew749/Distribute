@@ -35,7 +35,7 @@ class Node:
     def is_processing(self):
         return self.current_job_id != None
 
-    def dispatch_job(self, event, payload_function):
+    def dispatch_job(self, event, payload_function, namespace = None):
         """
         Helper to allow emission of event to particular node
         rather than all nodes in a namespace
@@ -44,7 +44,7 @@ class Node:
             'job_id': str(self.current_job_id),
             'payload_operation': payload_function
         }
-        emit(event, data, room=self.socket_id)
+        emit(event, data, room=self.socket_id, namespace = namespace)
 
     def emit(self, event, data):
         emit(event, data, room=self.socket_id)

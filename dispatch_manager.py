@@ -19,10 +19,10 @@ class DispatchManager:
 
         return cls._manager
 
-    def dispatch_job(self, job):
+    def dispatch_job(self, job, namespace = None):
         print 'Adding job %s to dispatch manager' % job.id
         self.id_to_job_mappings[job.id] = job
-        job.dispatch()
+        job.dispatch(namespace = namespace)
 
     def get_job(self, job_id):
         """

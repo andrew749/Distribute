@@ -3,6 +3,7 @@ from flask_socketio import SocketIO, send, emit
 import logging
 from functools import partial
 from uuid import uuid4
+from enum import Enum
 
 from node_pool import NodePool
 from node import Node
@@ -12,6 +13,7 @@ from dispatch_manager import DispatchManager
 
 app = Flask(__name__)
 socketio = SocketIO(app)
+logger = logging.getLogger('main_requests')
 
 @app.route('/')
 def index():
@@ -23,6 +25,7 @@ def index():
     When transitioned into a library ideally we would just have a script tag.
 
     """
+    print 'rendering template'
     return render_template('index.html')
 
 @socketio.on('connect')
@@ -38,7 +41,15 @@ def connect():
     # Create a new node
     NodePool.get_pool().add_new_node(node)
 
+    logger.info({
+        'node_id' : node.id,
+        'socket_id' : request.sid
+    })
     node.emit('registration', node.to_dict())
+
+class StatusCodes:
+    SUCCESS = 0
+    FAILURE = 1
 
 @socketio.on('job_results')
 def get_results(result_data):
@@ -52,9 +63,9 @@ def get_results(result_data):
     print 'GOT RESULT'
     # possible error code
     code = result_data.get('code');
-    if code == 0:
+    if code == StatusCodes.SUCCESS:
         print 'SUCCESS'
-    elif code == 1:
+    elif code == StatusCodes.FAILURE:
         # Code path where we want to either stop a job or retry the nodes operations
         # FIXME add retry logic
         print 'FAILURE'
@@ -63,10 +74,12 @@ def get_results(result_data):
     job_id = result_data.get('job_id')
     node_id = result_data.get('node_id')
     result = result_data.get('results')
-    # free up resources
+
+    # free up resources that are no longer being
+    # used so they can be re-dispatched
     NodePool.get_pool().free_node(node_id)
 
-    #get the job and push the data to it
+    #get the job and push the data to it so that it can stitch the data
     DispatchManager.get_manager().get_job(job_id).append_result(result)
 
 @app.route('/test')
@@ -79,7 +92,7 @@ def test():
         operation = \
         """
         var a = [];
-        for (var x = 0; x < 10; x++) {
+        for (var x = 0; x < 100; x++) {
             a.push(x);
         }
         return a;
@@ -89,10 +102,12 @@ def test():
 
     job = Job(
         payload = payload,
-        required_number_of_nodes = 1
+        required_number_of_nodes = 2
     )
-    DispatchManager.get_manager().dispatch_job(job)
+    DispatchManager.get_manager().dispatch_job(job, namespace = '/')
+    return 'OK'
 
 # code to start server
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app)
+    # app.run(debug=True)

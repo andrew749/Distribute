@@ -16,7 +16,7 @@ class Job:
         self.result = []
         self.received_results = 0
 
-    def dispatch(self):
+    def dispatch(self, namespace = None):
         """
         Distribute this work among the set nodes.
         """
@@ -36,7 +36,7 @@ class Job:
         node_counter = 0
         # split the payload data and send off jobs to all the nodes
         for x in self.payload.split_payload_data(self.required_number_of_nodes):
-            self.active_nodes.values()[node_counter].dispatch_job('job_request',  x)
+            self.active_nodes.values()[node_counter].dispatch_job('job_request',  x, namespace = namespace)
             node_counter += 1
 
         processing = True
@@ -51,6 +51,7 @@ class Job:
 
         # If this state is satisfied, we have all the parts from the dispatched jobs
         if self.received_results == self.required_number_of_nodes:
+            print self.result
             self.success = True
 
     def finish(self):
