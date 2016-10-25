@@ -34,6 +34,12 @@ class NodePool:
         if node:
             node.finish()
 
+    def get_free_node_count(self):
+        return len(self.free_nodes)
+
+    def get_occupied_node_count(self):
+        return len(self.occupied_nodes)
+
     def free_node(self, node_id):
         """
         Free a currently occupied node.
@@ -57,8 +63,6 @@ class NodePool:
             node: the node that can be used for processing
         """
         node = self.free_nodes.popitem()
-
-        print 'Consuming node %s' % node.id
 
         self.occupied_nodes.update({str(node[0]): node[1]})
         return node[1]

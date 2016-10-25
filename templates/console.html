@@ -1,0 +1,92 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <h1>
+            Currently Connected Nodes:
+        </h1>
+        Connected Nodes: <span id="connected-nodes">0</span><br>
+        Free Nodes: <span id="free-nodes">0</span><br>
+        Nodes in use: <span id="processing-nodes">0</span><br>
+        <h1>
+            Job Dispatch
+        </h1>
+        <form id='job-dispatch-form'>
+            Payload:
+            <br>
+            <textarea id="code-text" name="code" cols="80" rows="30"></textarea>
+            <br>
+            <input id="node-count-input" name="node-count" type="range" min="1" max="{{number_of_nodes}}" oninput="updateRangeBox(this.value)">
+            <span id="range-slider">{{number_of_nodes}}</span>
+            <br>
+            <input id="dispatch-button" type="submit" value="Dispatch">
+        </form>
+        <div class="running-jobs">
+            <h2>Running Jobs:<h2>
+                    <ul id='job-list'></ul>
+        </div>
+        <style>
+            .red {
+                color: #F00;
+            }
+            .green {
+                color: #0F0;
+            }
+            </style>
+
+        <script>
+            function updateRangeBox(value) {
+                document.getElementById("range-slider").innerHTML =  value;
+            }
+
+$('job-dispatch-form').submit(function(evt){
+
+    evt.preventDefault();
+    window.history.back();
+
+    var code = $('#code-text').val();
+    var node_count = $('#node-count-input').val();
+    console.log(code, node-count);
+});
+
+function getRunningJobs() {
+    $.get('/running_jobs', function(data){
+        $('#job-list').empty();
+        for (var x in data) {
+            var element = data[x];
+            $('#job-list')
+                .append(
+                    $('<li>').addClass(classForState(element.success)).append(element.id));
+        }
+    });
+}
+
+function classForState(state) {
+    return state ? 'green' : 'red' ;
+}
+
+function fetchNodeCount() {
+    $.get('/node_counts', function(data){
+        updateNodeCount(data.free_nodes, data.occupied_nodes)
+    });
+}
+
+function updateNodeCount(freeNodes, nodesInUse) {
+    $('#connected-nodes').text(freeNodes + nodesInUse);
+    $('#free-nodes').text(freeNodes);
+    $('#processing-nodes').text(nodesInUse);
+    $('#node-count-input').attr('max', freeNodes);
+    console.log(freeNodes, nodesInUse);
+}
+
+function pollNodeStats() {
+    setInterval(function(){
+        getRunningJobs();
+        fetchNodeCount();
+    }, 3000);
+}
+pollNodeStats();
+        </script>
+    </body>
+</html>

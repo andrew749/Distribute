@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, Response
 from flask_socketio import SocketIO, send, emit
 import logging
 from functools import partial
@@ -107,7 +107,31 @@ def test():
         DispatchManager.get_manager().dispatch_job(job, namespace = '/')
     return 'OK'
 
+@app.route('/console')
+def render_console():
+    return render_template('console.html', number_of_nodes = NodePool.get_pool().get_free_node_count())
+
+@app.route('/node_counts')
+def get_node_counts():
+    free_nodes = NodePool.get_pool().get_free_node_count()
+    occupied_nodes = NodePool.get_pool().get_occupied_node_count()
+    return jsonify({
+        'free_nodes': free_nodes,
+        'occupied_nodes': occupied_nodes
+    })
+
+@app.route('/running_jobs')
+def running_jobs():
+    job_dict = {x.id: x.to_dict() for x in DispatchManager.get_manager().\
+                id_to_job_mappings.values()}
+    return jsonify(
+        job_dict
+    )
+
+@app.route('/dispatch_job')
+def dispatch_job():
+    pass
+
 # code to start server
 if __name__ == '__main__':
     socketio.run(app)
-    # app.run(debug=True)

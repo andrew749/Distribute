@@ -74,6 +74,15 @@ class Job:
 
         return result
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'required_number_of_nodes': self.required_number_of_nodes,
+            'processing': self.processing,
+            'success': self.success,
+            'received_parts': self.received_results
+        }
+
     class JobResourceException(Exception):
         """
         Internal exception class to be used when there arent
