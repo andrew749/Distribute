@@ -12,19 +12,17 @@
         <h1>
             Job Dispatch
         </h1>
-        <form id='job-dispatch-form'>
-            Payload:
-            <br>
-            <textarea id="code-text" name="code" cols="80" rows="30"></textarea>
-            <br>
-            <input id="node-count-input" name="node-count" type="range" min="1" max="{{number_of_nodes}}" oninput="updateRangeBox(this.value)">
-            <span id="range-slider">{{number_of_nodes}}</span>
-            <br>
-            <input id="dispatch-button" type="submit" value="Dispatch">
-        </form>
+        Payload:
+        <br>
+        <textarea id="code-text" name="code" cols="80" rows="30"></textarea>
+        <br>
+        <input id="node-count-input" name="node-count" type="range" min="1" max="{{number_of_nodes}}" oninput="updateRangeBox(this.value)">
+        <span id="range-slider">{{number_of_nodes}}</span>
+        <br>
+        <input id="dispatch-button" type="button" value="Dispatch">
         <div class="running-jobs">
-            <h2>Running Jobs:<h2>
-                    <ul id='job-list'></ul>
+            <h2>Running Jobs:</h2>
+            <ul id='job-list'></ul>
         </div>
         <style>
             .red {
@@ -33,21 +31,20 @@
             .green {
                 color: #0F0;
             }
-            </style>
+        </style>
 
         <script>
             function updateRangeBox(value) {
                 document.getElementById("range-slider").innerHTML =  value;
             }
 
-$('job-dispatch-form').submit(function(evt){
-
-    evt.preventDefault();
-    window.history.back();
+$('#dispatch-button').click(function(evt){
+    console.log("butotn click");
 
     var code = $('#code-text').val();
     var node_count = $('#node-count-input').val();
-    console.log(code, node-count);
+    console.log(code, node_count);
+    dispatchJob(code, node_count);
 });
 
 function getRunningJobs() {
@@ -60,6 +57,17 @@ function getRunningJobs() {
                     $('<li>').addClass(classForState(element.success)).append(element.id));
         }
     });
+}
+
+function dispatchJob(code, number_of_nodes) {
+    $.ajax({
+        type: 'POST',
+        url:'/dispatch_job',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            code : code,
+            number_of_nodes: number_of_nodes
+        })});
 }
 
 function classForState(state) {

@@ -128,9 +128,25 @@ def running_jobs():
         job_dict
     )
 
-@app.route('/dispatch_job')
+@app.route('/dispatch_job', methods=['POST'])
 def dispatch_job():
-    pass
+    data = request.get_json()
+    code = data.get('code')
+    number_of_nodes = int(data.get("number_of_nodes"))
+    payload = Payload(
+            operation = code,
+            data=[1]
+    )
+
+    job = Job(
+        payload = payload,
+        # use all aailable cluster nodes
+        required_number_of_nodes = number_of_nodes
+    )
+
+    DispatchManager.get_manager().dispatch_job(job, namespace = '/')
+
+    return 'OK'
 
 # code to start server
 if __name__ == '__main__':
