@@ -42,6 +42,9 @@ class Job:
         processing = True
 
     def append_result(self, result):
+        if not result:
+            return
+
         if self.result == None:
             self.result = []
 
