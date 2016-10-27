@@ -26,7 +26,7 @@
             <br>
             <div id="code-text"></div>
             <br>
-            <h2>Number of execution nodes</h2>
+            <h2>Cluster Nodes To Use</h2>
             <input id="node-count-input" name="node-count" type="range" min="1" max="{{number_of_nodes}}" oninput="updateRangeBox(this.value)">
             <span id="range-slider">{{number_of_nodes}}</span>
             <br>
@@ -39,9 +39,10 @@
             </style>
         </div>
         <div class="status_console col-md-6">
-            <h1>
+            <h1>Cluster status</h2>
+            <h2>
                 Currently Connected Nodes
-            </h1>
+            </h2>
             <ul class="list-group">
                 <li class="list-group-item">
                     Connected Nodes <span class="badge" id="connected-nodes">0</span>
