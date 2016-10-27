@@ -1,47 +1,75 @@
 <html>
-    <head>
+    <!--<head>-->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ace.js"></script>
+
     </head>
     <body>
-        <h1>
-            Currently Connected Nodes:
-        </h1>
-        Connected Nodes: <span id="connected-nodes">0</span><br>
-        Free Nodes: <span id="free-nodes">0</span><br>
-        Nodes in use: <span id="processing-nodes">0</span><br>
-        <h1>
-            Job Dispatch
-        </h1>
-        Payload:
-        <br>
-        <textarea id="code-text" name="code" cols="80" rows="30"></textarea>
-        <br>
-        <input id="node-count-input" name="node-count" type="range" min="1" max="{{number_of_nodes}}" oninput="updateRangeBox(this.value)">
-        <span id="range-slider">{{number_of_nodes}}</span>
-        <br>
-        <input id="dispatch-button" type="button" value="Dispatch">
-        <div class="running-jobs">
-            <h2>Running Jobs:</h2>
-            <ul id='job-list'></ul>
+        <div class="job_dispatcher col-md-6">
+            <h1>
+                Job Dispatch
+            </h1>
+            <h2>
+                Payload
+            </h2>
+            <br>
+            <div id="code-text"></div>
+            <br>
+            <input id="node-count-input" name="node-count" type="range" min="1" max="{{number_of_nodes}}" oninput="updateRangeBox(this.value)">
+            <span id="range-slider">{{number_of_nodes}}</span>
+            <br>
+            <input id="dispatch-button" type="button" value="Dispatch" class="btn btn-large btn-primary">
+            <style>
+                #code-text {
+                    width: 100%;
+                    height: 500px;
+                }
+            </style>
         </div>
-        <style>
-            .red {
-                color: #F00;
-            }
-            .green {
-                color: #0F0;
-            }
-        </style>
+        <div class="status_console col-md-6">
+            <h1>
+                Currently Connected Nodes
+            </h1>
+            <ul class="list-group">
+                <li class="list-group-item">
+                    Connected Nodes <span class="badge" id="connected-nodes">0</span>
+                </li>
+                <li class="list-group-item">
+                    Free Nodes <span class="badge" id="free-nodes">0</span>
+                </li>
 
+                <li class="list-group-item">
+                    Used Nodes <span class="badge" id="processing-nodes">0</span>
+                </li>
+            </ul>
+
+            <h2>Running Jobs</h2>
+            <ul class="list-group" id='job-list'></ul>
+        </div>
         <script>
-            function updateRangeBox(value) {
-                document.getElementById("range-slider").innerHTML =  value;
-            }
+            var editor = ace.edit("code-text");
+editor.setTheme("ace/theme/monokai");
+editor.getSession().setMode("ace/mode/javascript");
+
+function updateRangeBox(value) {
+    document.getElementById("range-slider").innerHTML =  value;
+}
 
 $('#dispatch-button').click(function(evt){
     console.log("butotn click");
 
-    var code = $('#code-text').val();
+    var code = editor.getValue();
     var node_count = $('#node-count-input').val();
     console.log(code, node_count);
     dispatchJob(code, node_count);
@@ -54,7 +82,7 @@ function getRunningJobs() {
             var element = data[x];
             $('#job-list')
                 .append(
-                    $('<li>').addClass(classForState(element.success)).append(element.id));
+                    $('<li>').addClass(classForState(element.success)).addClass('label list-group-item').append(element.id));
         }
     });
 }
@@ -71,7 +99,7 @@ function dispatchJob(code, number_of_nodes) {
 }
 
 function classForState(state) {
-    return state ? 'green' : 'red' ;
+    return state ? 'list-group-item-success' : 'list-group-item-failure' ;
 }
 
 function fetchNodeCount() {
@@ -94,6 +122,7 @@ function pollNodeStats() {
         fetchNodeCount();
     }, 3000);
 }
+
 pollNodeStats();
         </script>
     </body>

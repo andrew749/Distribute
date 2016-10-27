@@ -107,7 +107,7 @@ def test():
         DispatchManager.get_manager().dispatch_job(job, namespace = '/')
     return 'OK'
 
-@app.route('/console')
+@app.route('/job_console')
 def render_console():
     return render_template('console.html', number_of_nodes = NodePool.get_pool().get_free_node_count())
 
@@ -150,4 +150,4 @@ def dispatch_job():
 
 # code to start server
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, debug=True)
