@@ -13,6 +13,12 @@
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ace.js"></script>
+        <style>
+            #code-text {
+                width: 100%;
+                height: 500px;
+            }
+        </style>
 
     </head>
     <body>
@@ -24,25 +30,23 @@
                 Payload
             </h2>
             <br>
+
+            <!--The editor where a user can enter code to deploy.-->
             <div id="code-text"></div>
+
             <br>
-            <h2>Cluster Nodes To Use</h2>
+            <!--UI element to select number of nodes to send job to-->
+            <h2>
+                Cluster Nodes To Use
+            </h2>
             <input id="node-count-input" name="node-count" type="range" min="1" max="{{number_of_nodes}}" oninput="updateRangeBox(this.value)">
             <span id="range-slider">{{number_of_nodes}}</span>
             <br>
             <input id="dispatch-button" type="button" value="Dispatch" class="btn btn-large btn-primary">
-            <style>
-                #code-text {
-                    width: 100%;
-                    height: 500px;
-                }
-            </style>
         </div>
         <div class="status_console col-md-6">
             <h1>Cluster status</h2>
-            <h2>
-                Currently Connected Nodes
-            </h2>
+            <h2>Currently Connected Nodes</h2>
             <ul class="list-group">
                 <li class="list-group-item">
                     Connected Nodes <span class="badge" id="connected-nodes">0</span>
@@ -69,11 +73,8 @@ function updateRangeBox(value) {
 }
 
 $('#dispatch-button').click(function(evt){
-    console.log("butotn click");
-
     var code = editor.getValue();
     var node_count = $('#node-count-input').val();
-    console.log(code, node_count);
     dispatchJob(code, node_count);
 });
 
@@ -83,8 +84,10 @@ function getRunningJobs() {
         for (var x in data) {
             var element = data[x];
             $('#job-list')
-                .append(
-                    $('<li>').addClass(classForState(element.success)).addClass('label list-group-item').append(element.id));
+                .append($('<li>')
+                    .addClass(classForState(element.success))
+                        .addClass('label list-group-item')
+                        .append(element.id));
         }
     });
 }
@@ -101,7 +104,7 @@ function dispatchJob(code, number_of_nodes) {
 }
 
 function classForState(state) {
-    return state ? 'list-group-item-success' : 'list-group-item-failure' ;
+    return state ? 'list-group-item-success' : 'list-group-item-danger' ;
 }
 
 function fetchNodeCount() {
