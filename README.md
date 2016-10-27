@@ -23,3 +23,17 @@ python server.py
 ```
 curl localhost:5000/test
 ```
+### Important urls
+
+```
+/
+```
+
+Start a new node in the cluster
+
+
+```
+/console
+```
+
+Open the console to view jobs and to dispatch new jobs.
