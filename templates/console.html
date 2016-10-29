@@ -1,70 +1,54 @@
-<html>
-    <!--<head>-->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- Latest compiled and minified CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+{% extends "base.html" %}
+{% block content %}
+<style>
+    #code-text {
+        width: 100%;
+        height: 500px;
+    }
+</style>
+<div class="job_dispatcher col-md-6">
+    <h1>
+        Job Dispatch
+    </h1>
+    <h2>
+        Payload
+    </h2>
+    <br>
 
-        <!-- Optional theme -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <!--The editor where a user can enter code to deploy.-->
+    <div id="code-text"></div>
 
-        <!-- Latest compiled and minified JavaScript -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ace.js"></script>
-        <style>
-            #code-text {
-                width: 100%;
-                height: 500px;
-            }
-        </style>
+    <br>
+    <!--UI element to select number of nodes to send job to-->
+    <h2>
+        Cluster Nodes To Use
+    </h2>
+    <input id="node-count-input" name="node-count" type="range" min="1" max="{{number_of_nodes}}" oninput="updateRangeBox(this.value)">
+    <span id="range-slider">{{number_of_nodes}}</span>
+    <br>
+    <input id="dispatch-button" type="button" value="Dispatch" class="btn btn-large btn-primary">
+</div>
+<div class="status_console col-md-6">
+    <h1>Cluster status</h2>
+    <h2>Currently Connected Nodes</h2>
+    <ul class="list-group">
+        <li class="list-group-item">
+            Connected Nodes <span class="badge" id="connected-nodes">0</span>
+        </li>
+        <li class="list-group-item">
+            Free Nodes <span class="badge" id="free-nodes">0</span>
+        </li>
 
-    </head>
-    <body>
-        <div class="job_dispatcher col-md-6">
-            <h1>
-                Job Dispatch
-            </h1>
-            <h2>
-                Payload
-            </h2>
-            <br>
+        <li class="list-group-item">
+            Used Nodes <span class="badge" id="processing-nodes">0</span>
+        </li>
+    </ul>
 
-            <!--The editor where a user can enter code to deploy.-->
-            <div id="code-text"></div>
-
-            <br>
-            <!--UI element to select number of nodes to send job to-->
-            <h2>
-                Cluster Nodes To Use
-            </h2>
-            <input id="node-count-input" name="node-count" type="range" min="1" max="{{number_of_nodes}}" oninput="updateRangeBox(this.value)">
-            <span id="range-slider">{{number_of_nodes}}</span>
-            <br>
-            <input id="dispatch-button" type="button" value="Dispatch" class="btn btn-large btn-primary">
-        </div>
-        <div class="status_console col-md-6">
-            <h1>Cluster status</h2>
-            <h2>Currently Connected Nodes</h2>
-            <ul class="list-group">
-                <li class="list-group-item">
-                    Connected Nodes <span class="badge" id="connected-nodes">0</span>
-                </li>
-                <li class="list-group-item">
-                    Free Nodes <span class="badge" id="free-nodes">0</span>
-                </li>
-
-                <li class="list-group-item">
-                    Used Nodes <span class="badge" id="processing-nodes">0</span>
-                </li>
-            </ul>
-
-            <h2>Running Jobs</h2>
-            <ul class="list-group" id='job-list'></ul>
-        </div>
-        <script>
-            var editor = ace.edit("code-text");
+    <h2>Running Jobs</h2>
+    <ul class="list-group" id='job-list'></ul>
+</div>
+<script>
+    var editor = ace.edit("code-text");
 editor.setTheme("ace/theme/monokai");
 editor.getSession().setMode("ace/mode/javascript");
 
@@ -129,6 +113,5 @@ function pollNodeStats() {
 }
 
 pollNodeStats();
-        </script>
-    </body>
-</html>
+</script>
+{% endblock %}
