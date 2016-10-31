@@ -37,3 +37,19 @@ Start a new node in the cluster
 ```
 
 Open the console to view jobs and to dispatch new jobs.
+
+## Payload specifications
+
+Imagine the payload is arbitrary javascript code that follows the function
+declaration.
+
+```
+function(payload_data) {
+    #your code here
+    # you MUST return some array result value;
+    return [0];
+}
+```
+
+Where payload data is the array slice that this particular node has been
+assigned.
