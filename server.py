@@ -148,6 +148,23 @@ def dispatch_job():
 
     return 'OK'
 
+@app.route('/update-job-status/<job_id>')
+def update_job_status(job_id):
+    status = request.args.get('status')
+    job = DispatchManager.get_manager().get_job(job_id)
+
+    if job is not None:
+        job.update_job_status(status)
+
+@app.route('/get-job-status/<job_id>')
+def get_job_status(job_id):
+    job = DispatchManager.get_manager().get_job(job_id)
+
+    if job is not None:
+        return job.get_job_status()
+
+    raise Exception
+
 # code to start server
 if __name__ == '__main__':
     socketio.run(app, debug=True)
