@@ -10,7 +10,7 @@ class Payload:
         for x in kwargs.items():
             new_body += "var {variable_name} = {variable_data};\n".format(
                 variable_name = x[0],
-                variable_data = x[1]
+                variable_data = [a.encode('utf-8') for a in x[1]]
             )
 
         new_body += func

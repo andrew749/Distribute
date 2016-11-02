@@ -65,27 +65,29 @@ def get_results(result_data):
         0 : SUCCESS
         1 : FAILURE
     """
+
     print 'GOT RESULT'
     # possible error code
     code = result_data.get('code');
     if code == StatusCodes.SUCCESS:
         print 'SUCCESS'
+
+        job_id = result_data.get('job_id')
+        node_id = result_data.get('node_id')
+        result = result_data.get('results', None)
+
+        #get the job and push the data to it so that it can stitch the data
+        DispatchManager.get_manager().get_job(job_id).append_result(result)
+
     elif code == StatusCodes.FAILURE:
         # Code path where we want to either stop a job or retry the nodes operations
         # FIXME add retry logic
         print 'FAILURE'
         return
 
-    job_id = result_data.get('job_id')
-    node_id = result_data.get('node_id')
-    result = result_data.get('results', None)
-
     # free up resources that are no longer being
     # used so they can be re-dispatched
     NodePool.get_pool().free_node(node_id)
-
-    #get the job and push the data to it so that it can stitch the data
-    DispatchManager.get_manager().get_job(job_id).append_result(result)
 
 @app.route('/test')
 def test():
@@ -133,9 +135,10 @@ def dispatch_job():
     data = request.get_json()
     code = data.get('code')
     number_of_nodes = int(data.get("number_of_nodes"))
+    payload_data = data.get('payload_data', None)
     payload = Payload(
             operation = code,
-            data=[1]
+            data=payload_data
     )
 
     job = Job(

@@ -32,6 +32,7 @@ socket.on('job_request', function(data){
     var results = executePayload(payload_operation);
     job_li.removeClass("list-group-item-danger");
     job_li.addClass("list-group-item-success");
+    console.log("completed job");
   } catch(err) {
     socket.emit("job_results", {
       code : 1,

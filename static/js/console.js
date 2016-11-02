@@ -10,7 +10,8 @@ function updateRangeBox(value) {
 $('#dispatch-button').click(function(evt){
   var code = editor.getValue();
   var node_count = $('#node-count-input').val();
-  dispatchJob(code, node_count);
+  var data = $('#payload_data_field').val().split(',');
+  dispatchJob(code, node_count, data);
 });
 
 function getRunningJobs() {
@@ -31,14 +32,15 @@ function getRunningJobs() {
   });
 }
 
-function dispatchJob(code, number_of_nodes) {
+function dispatchJob(code, number_of_nodes, payload_data) {
   $.ajax({
     type: 'POST',
     url:'/dispatch_job',
     contentType: 'application/json',
     data: JSON.stringify({
       code : code,
-      number_of_nodes: number_of_nodes
+      number_of_nodes: number_of_nodes,
+      payload_data: payload_data
     })});
 }
 
