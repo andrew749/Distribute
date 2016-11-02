@@ -44,9 +44,11 @@ Imagine the payload is arbitrary javascript code that follows the function
 declaration.
 
 ```
+// where payload_data is the input data that was assigned to this node
 function(payload_data) {
-    #your code here
-    # you MUST return some array result value;
+    // your code here
+    ...
+    // OPTIONAL return value
     return [0];
 }
 ```

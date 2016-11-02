@@ -78,7 +78,7 @@ def get_results(result_data):
 
     job_id = result_data.get('job_id')
     node_id = result_data.get('node_id')
-    result = result_data.get('results')
+    result = result_data.get('results', None)
 
     # free up resources that are no longer being
     # used so they can be re-dispatched

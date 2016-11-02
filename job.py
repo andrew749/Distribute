@@ -42,6 +42,12 @@ class Job:
         processing = True
 
     def append_result(self, result):
+        self.received_results += 1
+
+        # If this state is satisfied, we have all the parts from the dispatched jobs
+        if self.received_results == self.required_number_of_nodes:
+            self.success = True
+
         if not result:
             return
 
@@ -49,13 +55,6 @@ class Job:
             self.result = []
 
         self.result.extend(result)
-
-        self.received_results += 1
-
-        # If this state is satisfied, we have all the parts from the dispatched jobs
-        if self.received_results == self.required_number_of_nodes:
-            print self.result
-            self.success = True
 
     def finish(self):
         """

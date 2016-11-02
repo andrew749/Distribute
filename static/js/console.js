@@ -20,11 +20,12 @@ function getRunningJobs() {
       var element = data[x];
       $.get("/get-job-status/"+ element.id, function(result){
         $('#job-list')
-          .append($('<li>')
+          .append(
+            $('<li>')
             .addClass(classForState(element.success))
-              .addClass('label list-group-item')
-              .append(element.id + " : " + result.status + "%"));
-
+            .addClass('label list-group-item')
+              .append(element.id + " : " + result.status + "%")
+          );
       });
     }
   });
