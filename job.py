@@ -15,7 +15,6 @@ class Job:
         self.processing = False
         self.result = []
         self.received_results = 0
-        self.status = 0
 
     def dispatch(self, namespace = None):
         """
@@ -85,17 +84,15 @@ class Job:
             'processing': self.processing,
             'success': self.success,
             'received_parts': self.received_results,
-            'status': self.status
+            'status': self.get_job_status()
         }
 
     def get_job_status(self):
         """
         Return the percentage complete a job is
         """
-        return self.status if not self.success else 100
-
-    def update_job_status(self, status):
-        self.status = status
+        return ( self.received_results / self.required_number_of_nodes ) * 100 \
+                if not self.success else 100
 
     class JobResourceException(Exception):
         """

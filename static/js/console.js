@@ -17,11 +17,14 @@ function getRunningJobs() {
     $('#job-list').empty();
     for (var x in data) {
       var element = data[x];
-      $('#job-list')
-        .append($('<li>')
-          .addClass(classForState(element.success))
-            .addClass('label list-group-item')
-            .append(element.id));
+      $.get("/get-job-status/"+ element.id, function(result){
+        $('#job-list')
+          .append($('<li>')
+            .addClass(classForState(element.success))
+              .addClass('label list-group-item')
+              .append(element.id + " : " + result.status + "%"));
+
+      });
     }
   });
 }
@@ -59,7 +62,7 @@ function pollNodeStats() {
   setInterval(function(){
     getRunningJobs();
     fetchNodeCount();
-  }, 3000);
+  }, 5000);
 }
 
 pollNodeStats();

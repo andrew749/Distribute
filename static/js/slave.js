@@ -2,12 +2,6 @@ var domain = 'http://' + document.domain + ':' + location.port;
 var socket = io.connect(domain);
 var context = this;
 
-function updateStatusInternal(job_id, status) {
-  return function(status){
-    $.get('/update-job-status/'+ job_id, {'status': status}, function(data){});
-  }
-}
-
 // connect with the server initially
 socket.on('connect', function(socket) {
   console.log("connected");
@@ -28,8 +22,6 @@ socket.on('job_request', function(data){
   var job_id = data.job_id;
   console.log("Got job with id " + job_id);
 
-  context.updateStatus = updateStatusInternal(job_id);
-
   var job_li = $('<li>')
     .addClass("list-group-item list-group-item-danger")
     .append(job_id);
@@ -48,7 +40,6 @@ socket.on('job_request', function(data){
       job_id: context.job_id
     });
   }
-
 
   // return the calculated results
   socket.emit("job_results", {
