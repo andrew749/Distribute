@@ -1,6 +1,7 @@
 var editor = ace.edit("code-text");
 editor.setTheme("ace/theme/monokai");
 editor.getSession().setMode("ace/mode/javascript");
+editor.setValue(Cookies.get('code'));
 
 function updateRangeBox(value) {
   document.getElementById("range-slider").innerHTML =  value;
@@ -62,6 +63,7 @@ function pollNodeStats() {
   setInterval(function(){
     getRunningJobs();
     fetchNodeCount();
+    Cookies.set('code', editor.getValue() );
   }, 5000);
 }
 
