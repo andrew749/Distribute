@@ -1,4 +1,4 @@
-from node_pool import NodePool
+from model.node_pool import NodePool
 from uuid import uuid4
 
 class Job:

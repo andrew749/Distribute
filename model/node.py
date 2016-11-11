@@ -1,6 +1,6 @@
 from flask_socketio import SocketIO, send, emit
 from uuid import uuid4
-from node_pool import NodePool
+from model.node_pool import NodePool
 
 class Node:
     """

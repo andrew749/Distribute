@@ -5,11 +5,11 @@ from functools import partial
 from uuid import uuid4
 from enum import Enum
 
-from node_pool import NodePool
-from node import Node
-from payload import Payload
-from job import Job
-from dispatch_manager import DispatchManager
+from model.node_pool import NodePool
+from model.node import Node
+from model.payload import Payload
+from model.job import Job
+from model.dispatch_manager import DispatchManager
 
 app = Flask(__name__)
 socketio = SocketIO(app)
