@@ -5,3 +5,4 @@ share/
 *.pyc
 .Python
 .DS_Store
+tmp/

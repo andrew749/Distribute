@@ -22,10 +22,12 @@ function getRunningJobs() {
       $.get("/get-job-status/"+ element.id, function(result){
         $('#job-list')
           .append(
-            $('<li>')
+            $('<a>').attr("target", "_blank").attr('href', '/get-job-data/' + element.id)
+            .append($('<li>')
             .addClass(classForState(element.success))
             .addClass('label list-group-item')
-              .append(element.id + " : " + result.status + "%")
+            .append(element.id + " : " + result.status + "%")
+            )
           );
       });
     }

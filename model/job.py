@@ -1,5 +1,6 @@
 from model.node_pool import NodePool
 from uuid import uuid4
+import json
 
 class Job:
     """
@@ -15,6 +16,7 @@ class Job:
         self.processing = False
         self.result = []
         self.received_results = 0
+        self.filename = None
 
     def dispatch(self, namespace = None):
         """
@@ -68,13 +70,25 @@ class Job:
         If the result hasnt been requested yet, stich it together.
         Otherwise just return it.
         """
-        if processing == True:
+        if self.processing == True:
             raise JobStatusException(msg="Not done processing yet")
 
         if not self.success:
             raise JobStatusException(msg="Job was unsuccessful")
 
-        return result
+        if not self.filename:
+            self.filename = "{}.txt".format(uuid4())
+            path = "tmp/{}".format(self.filename)
+            f = open(path, 'w')
+            f.write(json.dumps(self.result))
+            f.close()
+        else:
+            path = self.filename('tmp/{}'.format(self.filename))
+
+        return path
+
+    def get_filename(self):
+        return self.filename
 
     def to_dict(self):
         return {
